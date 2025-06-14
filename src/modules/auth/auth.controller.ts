@@ -42,14 +42,10 @@ export class AuthController {
     return result;
   }
 
-  // Logout typically happens client-side by discarding the token.
-  // A backend logout might involve blacklisting tokens, but for stateless JWT, it's often not needed.
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Request() req) {
-    // If using JWT blacklist, you'd add the current token to a blacklist here.
-    // For this example, we'll just acknowledge the logout.
     return {
       message:
         'Logged out successfully (token should be discarded client-side).',

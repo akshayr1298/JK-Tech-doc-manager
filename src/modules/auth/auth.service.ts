@@ -29,10 +29,9 @@ export class AuthService {
       lastName: registerDto.lastName,
       email: registerDto.email,
       passwordHash: hashedPassword,
-      role: UserRole.VIEWER, // Default role for new registrations
+      role: UserRole.VIEWER, 
     });
 
-    // Exclude password hash from response
     const { ...result } = user;
     return result as any;
   }
@@ -67,11 +66,10 @@ export class AuthService {
 
   // Used by JwtStrategy to validate user based on JWT payload
   async validateUser(payload: any): Promise<any> {
-    // In a real app, you might fetch the user from DB to ensure it still exists and is active
     const user = await this.usersService.findById(payload.sub);
     if (!user || !user.isActive) {
       throw new UnauthorizedException('User is inactive or not found.');
     }
-    return user; // Returns the user object which is then attached to `req.user`
+    return user; 
   }
 }
