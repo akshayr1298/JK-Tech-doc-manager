@@ -1,0 +1,13 @@
+services:
+  dev-db:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: akshay
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # References the variable from the .env file
+      POSTGRES_DB: doc-manager-dev-db
+    networks:
+      - freecodecamp
+networks:
+  freecodecamp:
