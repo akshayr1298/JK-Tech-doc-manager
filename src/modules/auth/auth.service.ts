@@ -29,7 +29,7 @@ export class AuthService {
       lastName: registerDto.lastName,
       email: registerDto.email,
       passwordHash: hashedPassword,
-      role: UserRole.VIEWER, 
+      role: registerDto.role, 
     });
 
     const { ...result } = user;
