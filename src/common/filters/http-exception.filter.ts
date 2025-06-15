@@ -13,7 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-    const errorResponse = exception.getResponse(); // Get the original NestJS error object
+    const errorResponse = exception.getResponse();
 
     let message = 'Internal server error';
     let errors = {};
@@ -23,12 +23,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message = (errorResponse as any).message;
       }
       if ('errors' in errorResponse) {
-        // For validation errors
         errors = (errorResponse as any).errors;
       } else if (Array.isArray(message)) {
-        // For class-validator array messages
         errors = { details: message };
-        message = 'Validation failed'; // Generic message for validation errors
+        message = 'Validation failed';
       }
     } else if (typeof errorResponse === 'string') {
       message = errorResponse;
@@ -37,7 +35,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status,
       message: message,
-      errors: errors, // Include detailed errors if available (e.g., from validation pipe)
+      errors: errors,
       timestamp: new Date().toISOString(),
       path: request.url,
     });

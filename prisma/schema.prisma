@@ -61,7 +61,7 @@ model Document {
   filename           String
   filePath           String             @map("file_path")
   mimeType           String             @map("mime_type")
-  fileSize           BigInt             @map("file_size")
+  fileSize           Int                @map("file_size")
   status             DocumentStatus     @default(PENDING_UPLOAD)
   ownerId            Int                @map("owner_id")
   owner              User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)

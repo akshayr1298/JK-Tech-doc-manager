@@ -6,6 +6,7 @@ import { PrismaModule } from './config/database/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { DocumentsModule } from './modules/documents/documents.module';
+import { AppConfigModule } from './config/config.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { DocumentsModule } from './modules/documents/documents.module';
      PrismaModule,
      AuthModule,
      UsersModule,
-     DocumentsModule
+     DocumentsModule,
+     AppConfigModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -61,7 +61,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT) // 204 No Content for successful deletion
+  @HttpCode(HttpStatus.NO_CONTENT) 
   async remove(@Param('id') id: number) {
     await this.usersService.remove(id);
     return;
