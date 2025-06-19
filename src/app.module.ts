@@ -7,17 +7,31 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { AppConfigModule } from './config/config.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-     ConfigModule.forRoot({ isGlobal: true }),
-     PrismaModule,
-     AuthModule,
-     UsersModule,
-     DocumentsModule,
-     AppConfigModule
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
+    AuthModule,
+    UsersModule,
+    DocumentsModule,
+    AppConfigModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
