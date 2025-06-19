@@ -42,6 +42,22 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# stop docker container
+$ npm run db:dev:stop
+
+# start the docker container
+$ npm run db:dev:start
+
+# restart the docker container
+$ npm run db:dev:restart
+
+# migrate prisma 
+$ npx prisma migrate 
+
+# prisma studio
+$ npx prisma studio
+
 ```
 
 ## Run tests

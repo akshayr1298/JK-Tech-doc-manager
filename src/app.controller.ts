@@ -1,12 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Public } from './common/decorators/public.decorator'; // Custom decorator for public routes
-
+import { Public } from './common/decorators/public.decorator'; 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Public() // Mark this endpoint as public, bypassing authentication
+  @Public() 
   @Get('health')
   getHealth(): string {
     return this.appService.getHealth();

@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserRole } from 'src/common/constants/roles.enum';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -11,36 +23,47 @@ import { User } from '@prisma/client';
 @Roles(UserRole.ADMIN) // Only Admin can access User Management APIs
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
- @Get()
-  async findAll() {
-    // In a real app, you'd implement pagination and filtering
-    const users = await this.usersService.findAll();
-    // Exclude password hash from response
-    return users.map(({ password, ...rest }) => rest);
+  @Get()
+  async findAll(
+    @Query('page', new ParseIntPipe()) page = 1,
+    @Query('limit', new ParseIntPipe()) limit = 10,
+    @Query('search') search?: string,
+  ) {
+    const pageNumber = page;
+    const pageSize = limit;
+
+    return this.usersService.findAll({
+      page: pageNumber,
+      limit: pageSize,
+      search,
+    });
   }
- @Get(':id')
+
+  @Get(':id')
   async findOne(@Param('id') id: number) {
-    const user = await this.usersService.findById(id);
-    // Exclude password hash from response
-    const { password, ...result } = user;
+    const result = await this.usersService.findById(id);
     return result;
   }
 
   @Put(':id/role')
   @HttpCode(HttpStatus.OK)
-  async updateRole(@Param('id') id: number, @Body() updateRoleDto: UpdateUserRoleDto):Promise<Omit<User, 'password'>> {
-    const updatedUser = await this.usersService.updateRole(id, updateRoleDto.role);
-    const { ...result } = updatedUser;
-    return result;
+  async updateRole(
+    @Param('id') id: number,
+    @Body() updateRoleDto: UpdateUserRoleDto,
+  ): Promise<{ message: string; user: Omit<User, 'password'> }> {
+    const result = await this.usersService.updateRole(id, updateRoleDto.role);
+    return {
+      message: 'User role updated successfully',
+      user: result,
+    };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT) // 204 No Content for successful deletion
+  @HttpCode(HttpStatus.NO_CONTENT) 
   async remove(@Param('id') id: number) {
     await this.usersService.remove(id);
     return;
   }
-    
 }

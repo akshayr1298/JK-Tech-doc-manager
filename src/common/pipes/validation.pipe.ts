@@ -13,7 +13,6 @@ export class CustomValidationPipe implements PipeTransform<any> {
     const object = plainToInstance(metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
-      // Map errors to a more readable format
       const formattedErrors = errors.reduce((acc, err) => {
         if (err.constraints) {
           acc[err.property] = Object.values(err.constraints);
