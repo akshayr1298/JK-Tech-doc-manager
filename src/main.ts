@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { AppConfigService } from './config/app-config.service';
 
@@ -30,5 +30,6 @@ async function bootstrap() {
 
   const port = appConfig.port;
   await app.listen(port);
+  Logger.log(`server is running on PORT NO: ${port}`);
 }
 bootstrap();
