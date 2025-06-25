@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/config/database/prisma/prisma.service";
 import { CreateDocumentInternalDto } from "./dto/create-document.dto";
 import { Document, DocumentStatus, Prisma } from "@prisma/client";
@@ -8,6 +8,7 @@ import * as fs from 'fs';
 
 @Injectable()
 export class DocumentsService {
+  private readonly logger = new Logger(DocumentsService.name);
   constructor(
     private prisma: PrismaService, 
   ) {}
@@ -52,6 +53,7 @@ export class DocumentsService {
       where: { id },
     });
     if (!document) {
+      this.logger.warn(`Document with ID ${id} not found.`)
       throw new NotFoundException(`Document with ID ${id} not found.`);
     }
     return document;
@@ -81,6 +83,7 @@ export class DocumentsService {
     });
 
     if (!document) {
+      this.logger.warn(`Document with ID ${id} not found.`)
       throw new NotFoundException(`Document with ID ${id} not found.`);
     }
     await this.prisma.document.delete({
@@ -96,6 +99,7 @@ export class DocumentsService {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2025'
     ) {
+      this.logger.warn(`Document with ID ${id} not found.Error ${error?.message}`)
       throw new NotFoundException(`Document with ID ${id} not found.`);
     }
     throw error;

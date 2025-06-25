@@ -27,7 +27,8 @@ export class AuthService {
       throw new BadRequestException('User with this email already exists.');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10); // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(registerDto.password, salt); // Hash password
     const user = await this.usersService.create({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
@@ -70,7 +71,7 @@ export class AuthService {
         'Account is inactive. Please contact support.',
       );
     }
-    
+
     // Generate JWT token
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {
@@ -81,7 +82,7 @@ export class AuthService {
   // Used by JwtStrategy to validate user based on JWT payload
   async validateUser(payload: any): Promise<any> {
     this.logger.debug(`Validating user from JWT payload: ${payload.email}`);
-    const user = await this.usersService.findById(payload.sub);    
+    const user = await this.usersService.findById(payload.sub);
     if (!user || !user.isActive) {
       this.logger.warn(
         `User validation failed: User ${payload.email} not found or inactive.`,

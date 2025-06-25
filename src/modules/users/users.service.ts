@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../config/database/prisma/prisma.service';
@@ -10,6 +11,7 @@ import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -19,7 +21,7 @@ export class UsersService {
         lastName: createUserDto.lastName,
         email: createUserDto.email,
         password: createUserDto.passwordHash,
-        role: createUserDto.role
+        role: createUserDto.role,
       },
     });
 
@@ -82,6 +84,7 @@ export class UsersService {
       },
     });
     if (!user) {
+      this.logger.warn(`User with ID ${id} not found.`);
       throw new NotFoundException(`User with ID ${id} not found.`);
     }
     return user;
@@ -93,10 +96,14 @@ export class UsersService {
     });
   }
 
-  async updateRole(id: number, newRole: UserRole):Promise<Omit<User, 'password'>> {
+  async updateRole(
+    id: number,
+    newRole: UserRole,
+  ): Promise<Omit<User, 'password'>> {
     const user = await this.findById(id); // Check if user exists
 
     if (!Object.values(UserRole).includes(newRole)) {
+      this.logger.warn(`Invalid role: ${newRole}`);
       throw new BadRequestException(`Invalid role: ${newRole}`);
     }
 
@@ -114,7 +121,6 @@ export class UsersService {
         updatedAt: true,
       },
     });
-    
   }
 
   async remove(id: number): Promise<void> {
@@ -124,6 +130,7 @@ export class UsersService {
     } catch (error) {
       // Prisma will throw P2025 (RecordNotFound) if ID doesn't exist for delete
       if (error.code === 'P2025') {
+        this.logger.error(`User with ID ${id} not found. Error ${error?.message}`)
         throw new NotFoundException(`User with ID ${id} not found.`);
       }
       throw error; // Re-throw other errors

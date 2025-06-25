@@ -1,4 +1,24 @@
+# In your docker-compose.yml, under the 'backend' service:
 services:
+  backend:
+    build:
+      context: . # Build the image from the current directory (where Dockerfile is)
+      dockerfile: Dockerfile # Specify the Dockerfile name
+    container_name: nestjs-backend # A memorable name for the container
+    restart: always # Always restart the container if it stops
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    volumes:
+      - ./uploads:/app/uploads # Mount a volume for uploaded files persistence
+      - ./logs:/app/logs # Mount a volume for PM2 logs persistence
+    env_file:
+      - .env # Load environment variables from .env for the backend
+    depends_on:
+      - prod-db
+   
+    networks:
+      - app-network # Connect to the custom network
+
   dev-db:
     image: postgres:13
     ports:
@@ -8,6 +28,19 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # References the variable from the .env file
       POSTGRES_DB: doc-manager-dev-db
     networks:
-      - freecodecamp
+      - app-network
+
+  prod-db:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: akshay
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # References the variable from the .env file
+      POSTGRES_DB: doc-manager-prod-db
+    networks:
+      - app-network
+
 networks:
-  freecodecamp:
+  app-network: # CORRECTED: Removed the extra 'p' to match service references
+    driver: bridge
