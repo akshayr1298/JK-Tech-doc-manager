@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     config: AppConfigService,
     private authService: AuthService,
   ) {
-    const jwtSecret = config.jwtSecret;
+    const jwtSecret = config.jwtSecret;    
     
     if (!jwtSecret) {
       throw new Error(

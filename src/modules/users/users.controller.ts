@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   ParseIntPipe,
   Put,
@@ -23,6 +24,7 @@ import { User } from '@prisma/client';
 @Roles(UserRole.ADMIN) // Only Admin can access User Management APIs
 @Controller('users')
 export class UsersController {
+  
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
@@ -33,12 +35,13 @@ export class UsersController {
   ) {
     const pageNumber = page;
     const pageSize = limit;
-
+ 
     return this.usersService.findAll({
       page: pageNumber,
       limit: pageSize,
       search,
     });
+    
   }
 
   @Get(':id')
