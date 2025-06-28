@@ -33,7 +33,7 @@ services:
   prod-db:
     image: postgres:13
     ports:
-      - 5434:5432
+      - 5435:5432
     environment:
       POSTGRES_USER: akshay
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # References the variable from the .env file
